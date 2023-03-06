@@ -2,7 +2,7 @@ import { createRenderer } from 'vue'
 import { isOn } from '@vue/shared'
 import { useResizeObserver } from '@vueuse/core'
 import * as PIXI from 'pixi.js'
-import patchEvents from './patchEvent'
+import patchEvent from './patchEvent'
 import App from './App.vue'
 import { set } from './utils'
 
@@ -38,7 +38,7 @@ const renderer = createRenderer<PIXI.DisplayObject | null, PIXI.Container>({
     if (typeof el[key] === 'function') {
       el[key](...nextVal)
     } else if (isOn(key)) {
-      patchEvents(el, key, nextVal)
+      patchEvent(el, key, nextVal)
     } else {
       set(el, key, nextVal, ':')
     }
