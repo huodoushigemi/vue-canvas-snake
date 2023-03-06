@@ -8,10 +8,10 @@
 
   <!-- 网格 -->
   <template v-for="i in maxX">
-    <Graphics :lineStyle="[1]" :moveTo="[i * size, 0]" :lineTo="[i * size, maxY * size]" />
+    <Graphics :x="i * size" :lineStyle="[1]" :moveTo="[0, 0]" :lineTo="[0, maxY * size]" />
   </template>
   <template v-for="i in maxY">
-    <Graphics :lineStyle="[1]" :moveTo="[0, i * size]" :lineTo="[maxX * size, i * size]" />
+    <Graphics :y="i * size" :lineStyle="[1]" :moveTo="[0, 0]" :lineTo="[maxX * size, 0]" />
   </template>
 
   <!-- 食物 -->
@@ -19,7 +19,7 @@
 
   <!-- 蛇身 -->
   <template v-for="p in snake">
-    <Graphics :x="p[0] * size" :y="p[1] * size" :drawRect="[0, 0, size, size]" :beginFill="[0]" />
+    <Graphics :x="p[0] * size" :y="p[1] * size" :beginFill="[0]" :drawRect="[0, 0, size, size]" endFill />
   </template>
 
   <Text text="按空格 暂停/继续" :x="maxX * size * 0.45" :y="maxY * size * 0.8" :style:fill="0xcccccc80" />
@@ -106,7 +106,6 @@ function isSamePoint(p1: Point, p2: Point) {
 }
 // 是否越界
 function isRange(p: Point) {
-  console.log(p)
   return p[0] >= 0 && p[0] < maxX.value && p[1] >= 0 && p[1] < maxY.value
 }
 // 生成随机数
