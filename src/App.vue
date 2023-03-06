@@ -1,5 +1,5 @@
 <template>
-  <!-- 头部 -->
+  <!-- 顶部 -->
   <Graphics :zIndex="1">
     <Graphics :beginFill="[0x2d333b]" :drawRect="[0, 0, width, 55]" endFill :alpha="0.75" />
     <Text text="🐍 SNAKE" :x="12" :style:lineHeight="55" style:fill="white" />
@@ -7,11 +7,11 @@
   </Graphics>
 
   <!-- 网格 -->
-  <template v-for="i in maxW">
-    <Graphics :lineStyle="[1]" :moveTo="[i * size, 0]" :lineTo="[i * size, maxH * size]" />
+  <template v-for="i in maxX">
+    <Graphics :lineStyle="[1]" :moveTo="[i * size, 0]" :lineTo="[i * size, maxY * size]" />
   </template>
-  <template v-for="i in maxH">
-    <Graphics :lineStyle="[1]" :moveTo="[0, i * size]" :lineTo="[maxW * size, i * size]" />
+  <template v-for="i in maxY">
+    <Graphics :lineStyle="[1]" :moveTo="[0, i * size]" :lineTo="[maxX * size, i * size]" />
   </template>
 
   <!-- 食物 -->
@@ -19,11 +19,11 @@
 
   <!-- 蛇身 -->
   <template v-for="p in snake">
-    <Graphics :x="p[0] * size" :y="p[1] * size" :drawRect="[0, 0, size, size]" :beginFill="['#000']" />
+    <Graphics :x="p[0] * size" :y="p[1] * size" :drawRect="[0, 0, size, size]" :beginFill="[0]" />
   </template>
 
-  <Text text="按空格 暂停/继续" :x="maxW * size * 0.45" :y="maxH * size * 0.8" :style:fill="0xcccccc80" />
-  <Text v-if="!isActive" text="暂停中……" :x="maxW * size * 0.45" :y="maxH * size * 0.85" :style:fill="0xcccccc80" />
+  <Text text="按空格 暂停/继续" :x="maxX * size * 0.45" :y="maxY * size * 0.8" :style:fill="0xcccccc80" />
+  <Text v-if="!isActive" text="暂停中……" :x="maxX * size * 0.45" :y="maxY * size * 0.85" :style:fill="0xcccccc80" />
 </template>
 
 <script setup lang="ts">
@@ -33,11 +33,13 @@ import { Texture } from 'pixi.js'
 
 type Point = [x: number, y: number]
 
+// 网格数量
 const num = 10
 const { width, height } = useWindowSize()
 const size = computed(() => Math.min(width.value, height.value) / num)
-const maxW = computed(() => (width.value / size.value) >> 0)
-const maxH = computed(() => (height.value / size.value) >> 0)
+// 边界
+const maxX = computed(() => (width.value / size.value) >> 0)
+const maxY = computed(() => (height.value / size.value) >> 0)
 
 // 蛇身
 const snake = ref<Point[]>([
@@ -65,6 +67,7 @@ window.addEventListener('keydown', e => {
   nextDirection = e.key
 })
 
+// loop
 const { resume, pause, isActive } = useIntervalFn(() => {
   direction = nextDirection
   const head = snake.value[0]
@@ -97,19 +100,23 @@ function toGithub() {
   a.click()
 }
 
+// p1 == p2
 function isSamePoint(p1: Point, p2: Point) {
   return p1[0] == p2[0] && p1[1] == p2[1]
 }
+// 是否越界
 function isRange(p: Point) {
   console.log(p)
-  return p[0] >= 0 && p[0] < maxW.value && p[1] >= 0 && p[1] < maxH.value
+  return p[0] >= 0 && p[0] < maxX.value && p[1] >= 0 && p[1] < maxY.value
 }
+// 生成随机数
 function random(max: number, min = 0) {
   return (min + Math.random() * (max - min)) >> 0
 }
+// 生成食物
 function genFood() {
   let point!: Point
-  do point = [random(maxW.value), random(maxH.value)]
+  do point = [random(maxX.value), random(maxY.value)]
   while (snake.value.some(e => isSamePoint(e, point)))
   return point
 }
