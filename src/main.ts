@@ -1,11 +1,11 @@
 import { createRenderer } from 'vue'
-import { isOn, isString, normalizeStyle, parseStringStyle } from '@vue/shared'
+import { isOn, isString, parseStringStyle } from '@vue/shared'
 import { useResizeObserver } from '@vueuse/core'
 import * as PIXI from 'pixi.js'
-import patchEvents from './patchEvent'
+import patchEvent from './patchEvent'
 import App from './App.vue'
 import { get, set } from './utils'
-import { Graphics, ITextStyle, LineStyle, Sprite, Text, TextStyle, Texture } from 'pixi.js'
+import { ITextStyle, Sprite, Text, TextStyle, Texture } from 'pixi.js'
 
 // 创建画布
 const app = new PIXI.Application({ backgroundColor: '#242424' })
@@ -42,7 +42,7 @@ const renderer = createRenderer<PIXI.DisplayObject | null, PIXI.Container>({
     if (typeof ori === 'function') {
       ori.apply(el, Array.isArray(nxtVal) ? nxtVal : [])
     } else if (isOn(key)) {
-      patchEvents(el, key, nxtVal)
+      patchEvent(el, key, nxtVal)
     } else {
       switch (key) {
         case 'style':

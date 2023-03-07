@@ -2,7 +2,7 @@
   <!-- 顶部 -->
   <Graphics :zIndex="1">
     <Graphics :beginFill="[0x2d333b]" :drawRect="[0, 0, width, 55]" endFill :alpha="0.75" />
-    <Text text="🐍 SNAKE" :x="12" :style:lineHeight="55" style:fill="white" />
+    <Text text="🐍 SNAKE" :x="12" :style:lineHeight="55" style="fill: white" />
     <Sprite texture="https://huodoushigemi.github.io/docx2vue/assets/github-540f5a2f.svg" :x="256" :y="5" :width="45" :height="45" cursor="pointer" @click="toGithub" />
   </Graphics>
 
