@@ -3,7 +3,7 @@
   <Graphics :zIndex="1">
     <Graphics :beginFill="[0x2d333b]" :drawRect="[0, 0, width, 55]" endFill :alpha="0.75" />
     <Text text="🐍 SNAKE" :x="12" :style:lineHeight="55" style:fill="white" />
-    <Sprite :texture="Texture.from('https://huodoushigemi.github.io/docx2vue/assets/github-540f5a2f.svg')" :x="256" :y="5" :width="45" :height="45" cursor="pointer" @click="toGithub" />
+    <Sprite texture="https://huodoushigemi.github.io/docx2vue/assets/github-540f5a2f.svg" :x="256" :y="5" :width="45" :height="45" cursor="pointer" @click="toGithub" />
   </Graphics>
 
   <!-- 网格 -->
@@ -15,21 +15,20 @@
   </template>
 
   <!-- 食物 -->
-  <Text text="🍔" :x="food[0] * size" :y="food[1] * size" :style:fontSize="size / 1.4" :style:lineHeight="size" />
+  <Text text="🍔" :x="food[0] * size" :y="food[1] * size" :style="{ fontSize: size / 1.4, lineHeight: size }" />
 
   <!-- 蛇身 -->
   <template v-for="p in snake">
     <Graphics :x="p[0] * size" :y="p[1] * size" :beginFill="[0]" :drawRect="[0, 0, size, size]" endFill />
   </template>
 
-  <Text text="按空格 暂停/继续" :x="maxX * size * 0.45" :y="maxY * size * 0.8" :style:fill="0xcccccc80" />
-  <Text v-if="!isActive" text="暂停中……" :x="maxX * size * 0.45" :y="maxY * size * 0.85" :style:fill="0xcccccc80" />
+  <Text text="按空格 暂停/继续" :x="maxX * size * 0.45" :y="maxY * size * 0.8" style="fill: #cccccc80" />
+  <Text v-if="!isActive" text="暂停中……" :x="maxX * size * 0.45" :y="maxY * size * 0.85" style="fill: #cccccc80" />
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useIntervalFn, useWindowSize } from '@vueuse/core'
-import { Texture } from 'pixi.js'
 
 type Point = [x: number, y: number]
 

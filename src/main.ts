@@ -1,10 +1,11 @@
 import { createRenderer } from 'vue'
-import { isOn } from '@vue/shared'
+import { isOn, isString, normalizeStyle, parseStringStyle } from '@vue/shared'
 import { useResizeObserver } from '@vueuse/core'
 import * as PIXI from 'pixi.js'
 import patchEvents from './patchEvent'
 import App from './App.vue'
-import { set } from './utils'
+import { get, set } from './utils'
+import { Graphics, ITextStyle, LineStyle, Sprite, Text, TextStyle, Texture } from 'pixi.js'
 
 // 创建画布
 const app = new PIXI.Application({ backgroundColor: '#242424' })
@@ -18,6 +19,8 @@ document.body.appendChild(canvas)
 useResizeObserver(canvas, ([entry]) => {
   app.renderer.resize(entry.contentRect.width, entry.contentRect.height)
 })
+
+const OP = ':'
 
 // 自定义渲染器
 const renderer = createRenderer<PIXI.DisplayObject | null, PIXI.Container>({
@@ -33,14 +36,31 @@ const renderer = createRenderer<PIXI.DisplayObject | null, PIXI.Container>({
   remove(el) {
     el?.removeFromParent()
   },
-  patchProp(el, key, preVal, nextVal) {
+  patchProp(el, key, preVal, nxtVal) {
     if (!el) return
-    if (typeof el[key] === 'function') {
-      el[key](...nextVal)
+    const ori = get(el, key, OP)
+    if (typeof ori === 'function') {
+      ori.apply(el, Array.isArray(nxtVal) ? nxtVal : [])
     } else if (isOn(key)) {
-      patchEvents(el, key, nextVal)
+      patchEvents(el, key, nxtVal)
     } else {
-      set(el, key, nextVal, ':')
+      switch (key) {
+        case 'style':
+          if (preVal == nxtVal && isString(nxtVal)) return
+          const preStyle = (isString(preVal) ? parseStringStyle(preVal) : preVal) as ITextStyle
+          const nxtStyle = (isString(nxtVal) ? parseStringStyle(nxtVal) : nxtVal) as ITextStyle
+          // (el as Text).style = new TextStyle(nxtStyle)
+          // 由于直接 new TextStyle 开销较大，所以这里进行了优化
+          for (const k in preStyle) if (!(k in nxtStyle)) (el as Text).style[k] = TextStyle.defaultStyle[k]
+          Object.assign((el as Text).style, nxtStyle)
+          break;
+        case 'texture':
+          (el as Sprite).texture = isString(nxtVal) ? Texture.from(nxtVal) : nxtVal
+          break;
+        default:
+          set(el, key, nxtVal, OP)
+          break;
+      }
     }
   },
   createText(text) {
